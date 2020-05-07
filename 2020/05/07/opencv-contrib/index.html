@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="JIARUI CHEN">
+  <meta name="keywords" content="">
+  <title>opencv_contrib 手动编译 - 陈佳睿Amor的Blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>不忘初心</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              首页</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              归档</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              分类</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              标签</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              关于</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-05-07 10:22">
+                    2020年5月7日 上午
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.5k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    19
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>MacOS平台openCV调用Sift函数，需要配置opencv_contrib并手动用Cmake工具进行编译<br>过程介绍</p>
+<a id="more"></a>
+
+<h1 id="opencv3和opencv-contrib手动编译（macos）"><a href="#opencv3和opencv-contrib手动编译（macos）" class="headerlink" title="opencv3和opencv_contrib手动编译（macos）"></a>opencv3和opencv_contrib手动编译（macos）</h1><p>homebrew在国内并不会被墙，但是由于homebrew官方的bootles比较慢，而且homebrew有时候会选择给你下源码让你手动编译，所以如果在国内在macOS系统下进行开发的朋友可以尝试换国内的中科大源和清华源</p>
+<pre><code class="hljs bash"><span class="hljs-comment">## 替换brew.git:</span>
+<span class="hljs-built_in">cd</span> <span class="hljs-string">"<span class="hljs-variable">$(brew --repo)</span>"</span>
+git remote <span class="hljs-built_in">set</span>-url origin https://mirrors.ustc.edu.cn/brew.git</code></pre>
+
+<pre><code class="hljs bash"><span class="hljs-comment">## 替换homebrew-core.git:</span>
+<span class="hljs-built_in">cd</span> <span class="hljs-string">"<span class="hljs-variable">$(brew --repo)</span>/Library/Taps/homebrew/homebrew-core"</span>
+git remote <span class="hljs-built_in">set</span>-url origin https://mirrors.ustc.edu.cn/homebrew-core.git</code></pre>
+
+<pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles'</span> &gt;&gt; ~/.bashrc
+<span class="hljs-comment">## 但是现在最新版本的macos使用的是zsh shell</span>
+所以略作修改
+<span class="hljs-built_in">echo</span> <span class="hljs-string">'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles'</span> &gt;&gt; ~/.zshrc</code></pre>
+
+<hr>
+<p>以下是我在opencv_contrib +opencv3.0.0配置过程中出现的问题和解决</p>
+<p>之前我开发使用的是clion+Cmakelist.txt配置opencv4路径的组合</p>
+<p>但是当我想要使用opencv封装的sift函数的时候，发现opencv3封装的一部分特征检测的代码已经被移动到了xfeature2d函数库下，而这个函数库好像是在nonfree模块下，但是我电脑上没有添加opencv_contrib这个文件，导致直接调用会报错找不到我需要调用的函数的头文件，然后开始了漫长的配置之路</p>
+<hr>
+<h3 id="1）资源下载"><a href="#1）资源下载" class="headerlink" title="1）资源下载"></a>1）资源下载</h3><p>首先，鉴于在我通过Homebrew安装的opencv并没有opencv_contrib，我选择了重新开始配置新的opencv环境</p>
+<ol>
+<li><p>下载opencv和对应版本的opencv_contrib , 编译使用的cmake工具下载带有GUI界面的即可</p>
+</li>
+<li><p>opencv下载地址提供（其实就是opencv在github的官方仓库，自行选择版本即可，但是要和opencv_contrib版本对应）</p>
+</li>
+</ol>
+<p><a href="https://github.com/opencv/opencv/tree/3.4.8" target="_blank" rel="noopener">https://github.com/opencv/opencv/tree/3.4.8</a></p>
+<ol start="3">
+<li>opencv_contrib下载的地址，我选用的是3.4.8版本</li>
+</ol>
+<p><a href="https://github.com/opencv/opencv_contrib/tree/3.4.8" target="_blank" rel="noopener">https://github.com/opencv/opencv_contrib/tree/3.4.8</a></p>
+<h4 id="2）-编译安装"><a href="#2）-编译安装" class="headerlink" title="2） 编译安装"></a>2） 编译安装</h4><p>这里参考了stackoverflow上大神给出的解决办法</p>
+<p><a href="https://stackoverflow.com/questions/31822299/opencv-contrib-module-installation-on-mac" target="_blank" rel="noopener">https://stackoverflow.com/questions/31822299/opencv-contrib-module-installation-on-mac</a></p>
+<blockquote>
+<ol>
+<li>我们需要将下载下来的opencv-3.4.8和opencv_contrib-3.4.8文件放到一个文件夹下</li>
+</ol>
+</blockquote>
+<p>![](<a href="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen" target="_blank" rel="noopener">https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen</a> Shot 2019-12-12 at 10.23.05 AM.png)</p>
+<blockquote>
+<ol start="2">
+<li>在cmake(gui)中配置如上图的路径</li>
+</ol>
+</blockquote>
+<p>我们需要在opencv-3.4.8下新建build文件夹来保存编译文件</p>
+<p>在cmake中添加路径</p>
+<p>![](<a href="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen" target="_blank" rel="noopener">https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen</a> Shot 2019-12-12 at 10.24.29 AM.png)</p>
+<p>点击configure buttom</p>
+<p>问题1:</p>
+<p>####IPPICV: Download: ippicv_2017u3_lnx_intel64_general_20180723.tgz</p>
+<p>编译程序会卡在这个提示信息，最后显示timeout超时退出了程序</p>
+<p>下载的地址：</p>
+<p><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fopencv%2Fopencv_3rdparty%2Fbranches%2Fall" target="_blank" rel="noopener">https://github.com/opencv/opencv_3rdparty/tree/ippicv/master_20180723/ippicv</a></p>
+<p>这个链接可能会过期，但是只要在github上找到你想要找的系统和版本即可</p>
+<p>至于这个文件下载后放置的位置：opencv-3.3.0/3rdparty/ippicv/ippicv.cmake 这个文件可以用sublime Text打开</p>
+<p>查找url形式 “<a href="https://raw.githubusercontent.com/opencv/opencv_3rdparty/${IPPICV_COMMIT}/ippicv/&quot;字段" target="_blank" rel="noopener">https://raw.githubusercontent.com/opencv/opencv_3rdparty/${IPPICV_COMMIT}/ippicv/&quot;字段</a></p>
+<p>将其更换为上述文件存储的目录名</p>
+<p>即上面的” “中的内容换成 “file:///home/usrname/install/“ 而你下载的ippicv_2017u3_lnx_intel64_general_20180723.tgz就放在你电脑的/home/usrname/install目录下</p>
+<p>修改完成之后 再次进行configure编译 我这边是提示了 hashcode不一致的warning </p>
+<p>至于具体如何修改，可以参见这个博客</p>
+<p><a href="https://blog.csdn.net/KayChanGEEK/article/details/79919417" target="_blank" rel="noopener">https://blog.csdn.net/KayChanGEEK/article/details/79919417</a></p>
+<p>具体阅读opencv-3.4.8/build/CMakeDownloadLog.txt日志，我直接跳过了这个步骤</p>
+<p>因为我发现它好像是自行修正了，但后续编译中还是会报相关warning，但不影响成功编译和函数调用</p>
+<blockquote>
+<ol start="3">
+<li>安装opencv_contrib模块</li>
+</ol>
+</blockquote>
+<p>在cmake（GUI）的search中输入extra</p>
+<p>在value中输入 /你的opencv_contrib地址/modules</p>
+<p>![](<a href="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen" target="_blank" rel="noopener">https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen</a> Shot 2019-12-12 at 10.38.25 AM.png)</p>
+<p>点击configure </p>
+<p>编译过程中再次出现问题</p>
+<p>###face_landmark_model.dat模块下载超时</p>
+<p>打开文件&lt;opencv源代码的路径&gt;/opencv_contrib/modules/face/CMakeLists.txt，找到文件关于commit_hash的那一行，替换commit_hash进行下载</p>
+<p>下载路径： <a href="https://raw.githubusercontent.com/opencv/opencv_3rdparty/8afa57abc8229d611c4937165d20e2a2d9fc5a12/face_landmark_model.dat" target="_blank" rel="noopener">https://raw.githubusercontent.com/opencv/opencv_3rdparty/8afa57abc8229d611c4937165d20e2a2d9fc5a12/face_landmark_model.dat</a></p>
+<pre><code class="hljs bash">https://raw.githubusercontent.com/opencv/opencv_3rdparty/<span class="hljs-variable">$&#123;__commit_hash&#125;</span>/face_landmark_model.dat</code></pre>
+
+<p>替换为你本机下载该文件的上层目录，原理同上面的ippicv文件</p>
+<p>配置完成后点击generate，显示generate done</p>
+<blockquote>
+<ol start="4">
+<li>编译</li>
+</ol>
+</blockquote>
+<pre><code class="hljs go"><span class="hljs-built_in">make</span> -j4  这里j后参数可变，理论上表示用的核心数量</code></pre>
+
+<hr>
+<p>其他一些可能遇到的杂七杂八的（make）编译过程错误 （没有遇到可以跳过）</p>
+<p>Cmake error at<br>opencv_contrib-master/modules/datasets/CMakeLists.txt:7 (ocv_append_source_files_cxx_compiler_options):<br>Unknown CMake command “ocv_append_source_files_cxx_compiler_options”.</p>
+<p>– Configuring incomplete, errors occurred!<br>See also “/home/sunhong/Downloads/opencv-3.4.1/my_build_dir/CMakeFiles/CMakeOutput.log”.<br>See also “/home/sunhong/Downloads/opencv-3.4.1/my_build_dir/CMakeFiles/CMakeError.log”.</p>
+<p>解决办法：</p>
+<p>注释掉:opencv_contrib-master/modules/datasets/CMakeLists.txt:7 (ocv_append_source_files_cxx_compiler_options):</p>
+<p>之后又有报错说缺face_landmark_model.dat这个文件</p>
+<p>修改自己对应文件夹opencv_contrib/modules/face/CMakeLists.txt</p>
+<p><em>#”<a href="https://raw.githubusercontent.com/opencv/opencv_3rdparty/${__commit_hash}/&quot;" target="_blank" rel="noopener">https://raw.githubusercontent.com/opencv/opencv_3rdparty/${__commit_hash}/&quot;</a></em></p>
+<p>报错：</p>
+<p>![](<a href="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen" target="_blank" rel="noopener">https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen</a> Shot 2019-12-09 at 9.23.33 AM.png)</p>
+<p>解决办法： （stackoverflow大法好）</p>
+<p>![](<a href="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen" target="_blank" rel="noopener">https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen</a> Shot 2019-12-09 at 9.24.30 AM.png)</p>
+<p>参考链接：</p>
+<p><a href="https://stackoverflow.com/questions/31822299/opencv-contrib-module-installation-on-mac" target="_blank" rel="noopener">https://stackoverflow.com/questions/31822299/opencv-contrib-module-installation-on-mac</a></p>
+<p><a href="https://stackoverflow.com/questions/46884682/error-in-building-opencv-with-ffmpeg" target="_blank" rel="noopener">https://stackoverflow.com/questions/46884682/error-in-building-opencv-with-ffmpeg</a></p>
+<hr>
+<p>空降此处</p>
+<blockquote>
+<ol start="5">
+<li>安装</li>
+</ol>
+</blockquote>
+<pre><code class="hljs bash">sudo make install</code></pre>
+
+<p>![](<a href="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen" target="_blank" rel="noopener">https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/Screen</a> Shot 2019-12-12 at 9.36.18 AM.png)</p>
+<p>###老泪纵横，终于行了</p>
+<blockquote>
+<ol start="6">
+<li>安装结果</li>
+</ol>
+</blockquote>
+<p>头文件在：/usr/local/include/opencv4/</p>
+<p><img src="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/12679119-35a03fec8ba80cc5.png" srcset="/img/loading.gif" alt=""></p>
+<p>lib在：/usr/local/lib</p>
+<p><img src="https://my-markdown-pic.oss-cn-qingdao.aliyuncs.com/img/12679119-29a1ff318f0e5182.png" srcset="/img/loading.gif" alt=""></p>
+<p>我采用的clion+cmakelist.txt的方式访问opencv库</p>
+<pre><code class="hljs c++">cmake_minimum_required(VERSION <span class="hljs-number">3.9</span>)
+project(cv)   <span class="hljs-comment">//项目名</span>
+
+<span class="hljs-built_in">set</span>(CMAKE_CXX_STANDARD <span class="hljs-number">11</span>)
+
+find_package(OpenCV)
+
+include_directories($&#123;OpenCV_INCLUDE_DIRS&#125;)
+
+<span class="hljs-built_in">set</span>(CMAKE_CXX_FLAGS <span class="hljs-string">"$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11"</span>)
+
+add_executable(cv  experiment.cpp)  <span class="hljs-comment">//项目名 运行的函数名</span>
+target_link_libraries(cv $&#123;OpenCV_LIBS&#125;)</code></pre>
+
+<hr>
+<p>xcode的配置方法可以参见以下链接</p>
+<p><a href="https://www.jianshu.com/p/9fc82d0dcf0d" target="_blank" rel="noopener">https://www.jianshu.com/p/9fc82d0dcf0d</a></p>
+<p>唯一的差别是<br>Header Search Paths设置为<code>/usr/local/include/opencv4/</code><br>Library Search Paths设置为<code>/usr/local/lib</code></p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Computer-Vision/">Computer Vision</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/MacOS/">MacOS</a>
+                    
+                      <a class="hover-with-bg" href="/tags/openCV/">openCV</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/05/08/hello-world/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "opencv_contrib 手动编译&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
